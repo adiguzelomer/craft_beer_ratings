@@ -77,6 +77,7 @@ def get_style_ids():
 
     return style_ids
 
+
 def get_url(url):
     """
     Wrapper for requests.get that includes status and error messages.
@@ -120,6 +121,7 @@ def get_url(url):
         return None
 
     return website
+
 
 def put_beer(beer, table, print_message=False):
     """
