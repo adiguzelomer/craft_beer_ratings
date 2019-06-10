@@ -105,7 +105,7 @@ def get_url(url):
         )
         return None
 
-    if top_rated.status_code == 200:
+    if website.status_code == 200:
         print(
             'Retrieved {} at {}'.format(
                 url, dt.datetime.now())
