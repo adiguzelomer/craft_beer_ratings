@@ -5,6 +5,7 @@ import argparse
 import boto3
 import json
 import decimal
+import re
 # import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -22,6 +23,7 @@ BA_URLS = {
     'location:': 'https://www.beeradvocate.com/lists/<loc>',
     'brewery': 'https://www.beeradvocate.com/beer/profile/<brewery_id>',
     'beer': 'https://www.beeradvocate.com/beer/profile/<brewery_id>/<beer_id>'
+    'home': 'https://www.beeradvocate.com'
 }
 
 
@@ -44,6 +46,38 @@ def main():
 
     return 0
 
+def get_beer_profile_links(url):
+    """
+    Given a url, returns a list of all the beer
+    profile urls found on that page.
+
+    Parameters
+    ----------
+    url: string:
+      An url with a table of beer profile links
+
+    Returns
+    -------
+    profile_urls: list of strings
+      A list of all the profile links found on that page.
+    """
+
+    ratings_page = get_url(url)
+    if ratings_page is None:
+        return None
+
+    soup = BeautifulSoup(ratings_page.text, 'html5lib')
+
+    table = soup.find(name='table')
+
+    links = table.find_all(
+        lambda tag: tag.has_attr('href'))
+
+    regex = re.compile(r'/beer/profile/[\d]*/[\d]*/')
+    links_list = [link.get('href') for link in links if regex.search(link.get('href'))]
+
+    return links_list
+
 
 def get_style_ids():
     """
@@ -61,6 +95,8 @@ def get_style_ids():
     """
 
     top_rated = get_url(BA_URLS['top_rated'])
+    if top_rated is None:
+        return None
 
     top_rated_soup = BeautifulSoup(top_rated.text, 'html5lib')
     style_list = top_rated_soup.find(
