@@ -60,27 +60,7 @@ def get_style_ids():
       For example, 'american_ipa': '116'
     """
 
-    try:
-        top_rated = requests.get(BA_URLS['top_rated'])
-    except Exception as e:
-        print(
-            'Failed to retrieve {}\nError message: {}'.format(
-                BA_URLS['top_rated'], e),
-                file=sys.stderr,
-                flush=True
-        )
-
-    if top_rated.status_code == 200:
-        print(
-            'Retrieved {} at {}'.format(
-                BA_URLS['top_rated'], dt.datetime.now())
-        )
-    else:
-        print(
-            'Attempted to retreive {} at {}.'.format(
-                BA_URLS['top_rated'], dt.datetime.now()),
-            'Status Code: {}'.format(top_rated.status_code)
-        )
+    top_rated = get_url(BA_URLS['top_rated'])
 
     top_rated_soup = BeautifulSoup(top_rated.text, 'html5lib')
     style_list = top_rated_soup.find(
@@ -97,6 +77,49 @@ def get_style_ids():
 
     return style_ids
 
+def get_url(url):
+    """
+    Wrapper for requests.get that includes status and error messages.
+
+    Parameters
+    ----------
+    url: string:
+      The url of the website to be retrieved.
+
+    Returns
+    -------
+    website: requests.models.Response
+      The website that was retrieved.
+    None:
+      Returns None if the website was not retrieved.
+    """
+
+    try:
+        website = requests.get(url)
+    except Exception as e:
+        print(
+            'Failed to retrieve {}\nError message: {}'.format(
+                url, e),
+            file=sys.stderr,
+            flush=True
+        )
+        return None
+
+    if top_rated.status_code == 200:
+        print(
+            'Retrieved {} at {}'.format(
+                url, dt.datetime.now())
+        )
+    else:
+        print(
+            'Attempted to retreive {} at {}\nStatus Code: {}'.format(
+                url, dt.datetime.now(), website.status_code),
+            file=sys.stderr,
+            flush=True
+        )
+        return None
+
+    return website
 
 def put_beer(beer, table, print_message=False):
     """
