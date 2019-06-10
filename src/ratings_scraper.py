@@ -1,27 +1,27 @@
 import os
 import sys
-if os.path.dirname(__file__) not in sys.path:
-    print("Appendeded current path to sys.path")
-    sys.path.append(os.path.dirname(__file__))
-
+import datetime as dt
 import argparse
 import boto3
 import json
 import decimal
 # import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
-
+if os.path.dirname(__file__) not in sys.path:
+    print("Appendeded current path to sys.path")
+    sys.path.append(os.path.dirname(__file__))
 
 # The basic URLs that will be scraped.
 # Every URL except for top_rated the item enclosed in <>
 # must be replaced with an appropriate value.
 
 BA_URLS = {
-    'top_rated': 'https://www.beeradvocate.com/lists/top/'
-    'style': 'https://www.beeradvocate.com/lists/style/<style_id>'
-    'location:': 'https://www.beeradvocate.com/lists/<loc>'
-    'brewery': 'https://www.beeradvocate.com/beer/profile/<brewery_id>'
+    'top_rated': 'https://www.beeradvocate.com/lists/top/',
+    'style': 'https://www.beeradvocate.com/lists/style/<style_id>',
+    'location:': 'https://www.beeradvocate.com/lists/<loc>',
+    'brewery': 'https://www.beeradvocate.com/beer/profile/<brewery_id>',
     'beer': 'https://www.beeradvocate.com/beer/profile/<brewery_id>/<beer_id>'
 }
 
@@ -46,7 +46,54 @@ def main():
     return 0
 
 def get_style_ids():
+    """
+    Scrapes the style ids from the top_rated page.
 
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    style_ids: dictionary:
+      The keys are the names of the style the value is the ids.
+      For example, 'american_ipa': '116'
+    """
+
+    try:
+        top_rated = requests.get(BA_URLS['top_rated'])
+    except Exception as e:
+        print(
+            'Failed to retrieve {}\nError message: {}'.format(
+                BA_URLS['top_rated'], e), file=sys.stderr,
+                flush=True)
+
+    if top_rated.status_code == 200:
+        print(
+            'Retrieved {} at {}'.format(
+                BA_URLS['top_rated'], dt.datetime.now())
+        )
+    else:
+        print(
+            'Attempted to retreive {} at {}.'.format(
+                BA_URLS['top_rated'], dt.datetime.now()),
+            'Status Code: {}'.format(webpage.status_code)
+        )
+
+    top_rated_soup = BeautifulSoup(top_rated.text, 'html5lib')
+    style_list = top_rated_soup.find(
+        lambda tag: tag.name=='form' and tag.get('name')=='styles')
+
+    style_ids = {}
+    for style in style_list.find_all(
+        lambda tag: tag.name=='option' and not tag.has_attr('disabled')
+    ):
+        if style.get('value') == '':
+            continue
+        name = style.text.lower().replace(' ', '_')
+        style_ids[name] = style.get('value')
+
+    return style_ids
 
 def put_beer(beer, table, print_message=False):
     """
