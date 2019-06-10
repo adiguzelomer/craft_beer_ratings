@@ -16,7 +16,7 @@ if os.path.dirname(__file__) not in sys.path:
 # The basic URLs that will be scraped.
 # Every URL except for top_rated the item enclosed in <>
 # must be replaced with an appropriate value.
-
+# The home url can be appended with the data as well.
 BA_URLS = {
     'top_rated': 'https://www.beeradvocate.com/lists/top/',
     'style': 'https://www.beeradvocate.com/lists/style/<style_id>',
@@ -25,17 +25,18 @@ BA_URLS = {
     'beer': 'https://www.beeradvocate.com/beer/profile/<brewery_id>/<beer_id>'
     'home': 'https://www.beeradvocate.com'
 }
-
+AWS_REGION = 'us-east-2'
+DYNAMODB = boto3.resource('dynamodb', region_name=AWS_REGION)
+BEER_TABLE = DYNAMODB.Table('beers')
+BREWERY_TABLE = DYNAMODB.Table('breweries')
 
 def main():
     arg_parser = argparse.ArgumentParser(
         description='Scrapes Beeradvocate for ratings data.'
     )
     arg_parser.parse_args()
-
-    # dynamodb = boto3.resource('dynamodb', region_name='us-east-2')
-    # table = dynamodb.Table('beer_ratings')
-    # print(type(table))
+    # You must use decimal.Decimal to enter a float
+    # into DynamoDB.
     # beer = {
     #     'beer': 'Sensory Overload',
     #     'brewery': 'Olögy',
@@ -157,6 +158,30 @@ def get_url(url):
         return None
 
     return website
+
+
+def scrape_beer_profile(url):
+    """
+    Given an the url for a beer's profile page, scrapes the data
+    and returns it as a dictionary.
+
+    Parameters
+    ----------
+    url: string:
+      The url for the page to be scraped.
+
+    Returns
+    -------
+    beer_data: dictionary:
+      The data scraped from the page. (Does not include reviews.)
+    """
+
+    # Scrape the following: name, brewery, abv, availability,
+    #   notes, ba score, ba score category, num reviews, num ratings
+    #   pdev, wants, gots, trade
+    beer_data = {}
+
+    return beer_data
 
 
 def put_beer(beer, table, print_message=False):
