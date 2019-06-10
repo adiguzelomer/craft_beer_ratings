@@ -10,7 +10,6 @@ import requests
 from bs4 import BeautifulSoup
 
 if os.path.dirname(__file__) not in sys.path:
-    print("Appendeded current path to sys.path")
     sys.path.append(os.path.dirname(__file__))
 
 # The basic URLs that will be scraped.
@@ -45,6 +44,7 @@ def main():
 
     return 0
 
+
 def get_style_ids():
     """
     Scrapes the style ids from the top_rated page.
@@ -65,8 +65,10 @@ def get_style_ids():
     except Exception as e:
         print(
             'Failed to retrieve {}\nError message: {}'.format(
-                BA_URLS['top_rated'], e), file=sys.stderr,
-                flush=True)
+                BA_URLS['top_rated'], e),
+                file=sys.stderr,
+                flush=True
+        )
 
     if top_rated.status_code == 200:
         print(
@@ -77,16 +79,16 @@ def get_style_ids():
         print(
             'Attempted to retreive {} at {}.'.format(
                 BA_URLS['top_rated'], dt.datetime.now()),
-            'Status Code: {}'.format(webpage.status_code)
+            'Status Code: {}'.format(top_rated.status_code)
         )
 
     top_rated_soup = BeautifulSoup(top_rated.text, 'html5lib')
     style_list = top_rated_soup.find(
-        lambda tag: tag.name=='form' and tag.get('name')=='styles')
+        lambda tag: tag.name == 'form' and tag.get('name') == 'styles')
 
     style_ids = {}
     for style in style_list.find_all(
-        lambda tag: tag.name=='option' and not tag.has_attr('disabled')
+        lambda tag: tag.name == 'option' and not tag.has_attr('disabled')
     ):
         if style.get('value') == '':
             continue
@@ -95,9 +97,10 @@ def get_style_ids():
 
     return style_ids
 
+
 def put_beer(beer, table, print_message=False):
     """
-    Loads the beer to the DynanoDB table.
+    Loads the beer to the DynamoDB table.
 
     Parameters
     ----------
