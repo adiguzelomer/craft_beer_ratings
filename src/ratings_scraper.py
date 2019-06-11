@@ -22,7 +22,7 @@ BA_URLS = {
     'style': 'https://www.beeradvocate.com/lists/style/<style_id>',
     'location:': 'https://www.beeradvocate.com/lists/<loc>',
     'brewery': 'https://www.beeradvocate.com/beer/profile/<brewery_id>',
-    'beer': 'https://www.beeradvocate.com/beer/profile/<brewery_id>/<beer_id>'
+    'beer': 'https://www.beeradvocate.com/beer/profile/<brewery_id>/<beer_id>',
     'home': 'https://www.beeradvocate.com'
 }
 AWS_REGION = 'us-east-2'
@@ -109,7 +109,7 @@ def get_style_ids():
     ):
         if style.get('value') == '':
             continue
-        name = style.text.lower().replace(' ', '_')
+        name = style.text.lower()
         style_ids[name] = style.get('value')
 
     return style_ids
@@ -180,6 +180,34 @@ def scrape_beer_profile(url):
     #   notes, ba score, ba score category, num reviews, num ratings
     #   pdev, wants, gots, trade
     beer_data = {}
+
+    website = get_url(url)
+    if website is None:
+        return None
+
+    soup = BeautifulSoup(website.text, 'html5lib')
+
+    title_bar = soup.find(
+        lambda tag: tag.name == 'div' and tag.get('class') == ['titleBar']
+    )
+    beer_data['name'] = title_bar.find('h1').text.split(' |')[0].lower()
+
+    beer_info = soup.find(
+        lambda tag: tag.name == 'div' and tag.get('id') == 'info_box'
+    )
+
+    link_tags = beer_info.find_all(
+        lambda tag: tag.name == 'a' and tag.has_attr('href')
+    )
+
+    brewery_link_regex = re.compile(r'/beer/profile/[\d]*/')
+
+    for tag in link_tags:
+        if brewery_link_regex.search(tag.get('href')):
+            beer_data['brewery'] = tag.find('b').text.lower()
+            beer_data['brewery_profile_url'] = tag.get('href').lower()
+        elif tag.get('href').startswith('/beer/styles/'):
+            beer_data['style'] = tag.find('b').text.lower()
 
     return beer_data
 
