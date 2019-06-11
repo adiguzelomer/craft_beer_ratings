@@ -192,6 +192,33 @@ def scrape_beer_profile(url):
     )
     beer_data['name'] = title_bar.find('h1').text.split(' |')[0].lower()
 
+    beer_data.update(get_beer_info(soup))
+
+    score_tag = soup.find(
+        lambda tag: tag.name == 'span' and tag.get('class') == ['ba-ravg']
+    )
+    beer_data['rating'] = decimal.Decimal(score_tag.text)
+
+    beer_data.update(get_beer_stats(soup))
+
+    return beer_data
+
+def get_beer_info(soup):
+    '''
+    Extracts the information from the beer info box.
+
+    Parameters
+    ----------
+    soup: bs4.BeautifulSoup
+      The page containing the beer information
+
+    Returns
+    -------
+    beer_info: dictionary
+      A dictionary containing the beer information.
+    '''
+    beer_data = {}
+
     beer_info = soup.find(
         lambda tag: tag.name == 'div' and tag.get('id') == 'info_box'
     )
@@ -209,19 +236,65 @@ def scrape_beer_profile(url):
         elif tag.get('href').startswith('/beer/styles/'):
             beer_data['style'] = tag.find('b').text.lower()
 
-    beer_data['abv'] = decimal.Decimal(
-        re.search(r'[\d]*.[\d]*%', beer_info.text).group(0).replace('%', '')
-    )
+    found = re.search(r'[\d]*.[\d]*%', beer_info.text)
+    if found is not None:
+        beer_data['abv'] = decimal.Decimal(
+            found.group(0).replace('%', '')
+        )
 
     notes_idx = beer_info.text.find('Description:\n\n') + 14
     beer_data['note'] = beer_info.text[notes_idx:].strip()
 
-    score_tag = soup.find(
-        lambda tag: tag.name == 'span' and tag.get('class') == ['ba-ravg']
-    )
-    beer_data['rating'] = decimal.Decimal(score_tag.text)
+
 
     return beer_data
+
+
+def get_beer_stats(soup):
+    '''
+    Extracts the information from the beer stats box.
+
+    Parameters
+    ----------
+    soup: bs4.BeautifulSoup
+      The webpage containing the stats box
+
+    Returns
+    -------
+    beer_stats: dictionary
+      A dictionary containing the statistics
+    '''
+    beer_stats = {}
+
+    stats_tag = soup.find(
+        lambda tag: tag.name == 'div' and tag.get('id') == 'item_stats'
+    )
+
+    found = re.search(r'#[\d,]*', stats_tag.text)
+    if found is not None:
+        beer_stats['rank'] = int(
+            found.group(0).replace('#', '').replace(',', '')
+        )
+
+    beer_stats['reviews'] = int(
+        stats_tag.find(
+            lambda tag: tag.name == 'span' and tag.get('class') == ['ba-reviews']
+        ).text.replace(',', '')
+    )
+
+    beer_stats['ratings'] = int(
+        stats_tag.find(
+            lambda tag: tag.name == 'span' and tag.get('class') == ['ba-ratings']
+        ).text.replace(',', '')
+    )
+
+    beer_stats['pdev'] = decimal.Decimal(
+        stats_tag.find(
+            lambda tag: tag.name == 'span' and tag.get('class') == ['ba-pdev']
+        ).text.replace('%', '')
+    )
+
+    return beer_stats
 
 
 def put_beer(beer, table, print_message=False):
