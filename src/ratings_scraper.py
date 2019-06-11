@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import datetime as dt
 import argparse
 import boto3
@@ -34,18 +35,19 @@ def main():
     arg_parser = argparse.ArgumentParser(
         description='Scrapes Beeradvocate for ratings data.'
     )
-    arg_parser.parse_args()
-    # You must use decimal.Decimal to enter a float
-    # into DynamoDB.
-    # beer = {
-    #     'beer': 'Sensory Overload',
-    #     'brewery': 'Olögy',
-    #     'rating': decimal.Decimal('4.9')
-    # }
+    arg_parser.add_argument('url')
+    args = arg_parser.parse_args()
+    print(args.url)
 
-    # put_beer(beer, table, True)
+    links = get_beer_profile_links(args.url)
+
+    for link in links:
+        beer_data = scrape_beer_profile(link)
+        put_beer(beer_data)
+        time.sleep(5)
 
     return 0
+
 
 def get_beer_profile_links(url):
     """
@@ -75,7 +77,7 @@ def get_beer_profile_links(url):
         lambda tag: tag.has_attr('href'))
 
     regex = re.compile(r'/beer/profile/[\d]*/[\d]*/')
-    links_list = [link.get('href') for link in links if regex.search(link.get('href'))]
+    links_list = [BA_URLS['home'] + link.get('href') for link in links if regex.search(link.get('href'))]
 
     return links_list
 
@@ -176,9 +178,6 @@ def scrape_beer_profile(url):
       The data scraped from the page. (Does not include reviews.)
     """
 
-    # Scrape the following: name, brewery, abv, availability,
-    #   notes, ba score, ba score category, num reviews, num ratings
-    #   pdev, wants, gots, trade
     beer_data = {}
 
     website = get_url(url)
@@ -190,7 +189,7 @@ def scrape_beer_profile(url):
     title_bar = soup.find(
         lambda tag: tag.name == 'div' and tag.get('class') == ['titleBar']
     )
-    beer_data['name'] = title_bar.find('h1').text.split(' |')[0].lower()
+    beer_data['beer'] = title_bar.find('h1').text.split(' |')[0].lower()
 
     beer_data.update(get_beer_info(soup))
 
@@ -202,6 +201,7 @@ def scrape_beer_profile(url):
     beer_data.update(get_beer_stats(soup))
 
     return beer_data
+
 
 def get_beer_info(soup):
     '''
@@ -319,7 +319,7 @@ def get_beer_stats(soup):
     return beer_stats
 
 
-def put_beer(beer, table, print_message=False):
+def put_beer(beer, print_message=False):
     """
     Loads the beer to the DynamoDB table.
 
@@ -332,7 +332,7 @@ def put_beer(beer, table, print_message=False):
     print_message: bool: default=False
       Whether to print the response message.
     """
-    response = table.put_item(
+    response = BEER_TABLE.put_item(
         Item=beer
     )
 
