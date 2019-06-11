@@ -209,6 +209,18 @@ def scrape_beer_profile(url):
         elif tag.get('href').startswith('/beer/styles/'):
             beer_data['style'] = tag.find('b').text.lower()
 
+    beer_data['abv'] = decimal.Decimal(
+        re.search(r'[\d]*.[\d]*%', beer_info.text).group(0).replace('%', '')
+    )
+
+    notes_idx = beer_info.text.find('Description:\n\n') + 14
+    beer_data['note'] = beer_info.text[notes_idx:].strip()
+
+    score_tag = soup.find(
+        lambda tag: tag.name == 'span' and tag.get('class') == ['ba-ravg']
+    )
+    beer_data['rating'] = decimal.Decimal(score_tag.text)
+
     return beer_data
 
 
