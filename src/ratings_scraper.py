@@ -294,6 +294,28 @@ def get_beer_stats(soup):
         ).text.replace('%', '')
     )
 
+    beer_stats['wants'] = int(
+        stats_tag.find(
+            lambda tag: tag.name == 'span' and tag.get('class') == ['ba-wants']
+        ).text.replace(',', '')
+    )
+
+    beer_stats['gots'] = int(
+        stats_tag.find(
+            lambda tag: tag.name == 'span' and tag.get('class') == ['ba-gots']
+        ).text.replace(',', '')
+    )
+
+    link_tags =  stats_tag.find_all(
+            lambda tag: tag.name == 'a'
+                and tag.has_attr('href')
+                and tag.get('href').endswith('FT')
+    )
+
+    # There are two tags that match the above search.
+    # The number of trades is found in the second tag.
+    beer_stats['trade'] = int(link_tags[1].text.replace(',', ''))
+
     return beer_stats
 
 
