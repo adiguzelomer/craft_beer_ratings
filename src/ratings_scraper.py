@@ -54,7 +54,7 @@ def main():
 
         for style, id in style_ids.items():
             print('Now scraping this style: {}'.format(style))
-            links = get_beer_profile_links(args.url)
+            links = get_beer_profile_links(BA_URLS['style'].replace('<style_id>', id))
 
             for link in links:
                 beer_data = scrape_beer_profile(link)
@@ -196,7 +196,7 @@ def scrape_beer_profile(url):
       The data scraped from the page. (Does not include reviews.)
     """
 
-    beer_data = {}
+    beer_data = {'beer_url': url}
 
     website = get_url(url)
     if website is None:
