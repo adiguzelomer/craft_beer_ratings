@@ -35,16 +35,34 @@ def main():
     arg_parser = argparse.ArgumentParser(
         description='Scrapes Beeradvocate for ratings data.'
     )
-    arg_parser.add_argument('url')
+    arg_parser.add_argument('--url', help='A particular url to be scraped.')
+    arg_parser.add_argument('--styles', help='Will scrape the tops beers from each style.',
+                            action='store_true')
     args = arg_parser.parse_args()
-    print(args.url)
+    if args.url is not None:
+        print(args.url)
 
-    links = get_beer_profile_links(args.url)
+        links = get_beer_profile_links(args.url)
 
-    for link in links:
-        beer_data = scrape_beer_profile(link)
-        put_beer(beer_data)
-        time.sleep(5)
+        for link in links:
+            beer_data = scrape_beer_profile(link)
+            put_beer(beer_data)
+            time.sleep(5)
+
+    elif args.styles:
+        style_ids = get_style_ids()
+
+        for style, id in style_ids.items():
+            print('Now scraping this style: {}'.format(style))
+            links = get_beer_profile_links(args.url)
+
+            for link in links:
+                beer_data = scrape_beer_profile(link)
+                put_beer(beer_data)
+                time.sleep(5)
+
+            print('Completed scraping this style: {}'.format(style))
+
 
     return 0
 
