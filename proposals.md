@@ -72,6 +72,8 @@ Build a model using data from [Beeradvocate](https://www.beeradvocate.com/)
 that is infers the characteristics of a beer that affect its rating. Further,
 attempt to develop a recommender system for craft beers.
 
+Even better, develop a homebrew recipe generator.
+
 ### My approach
 
 ### User interaction
@@ -79,3 +81,5 @@ attempt to develop a recommender system for craft beers.
 ### Data sources
 [Beeradvocate](https://www.beeradvocate.com/) has a large number of data on
 craft beers.
+
+A data set on homebrew recipes.
