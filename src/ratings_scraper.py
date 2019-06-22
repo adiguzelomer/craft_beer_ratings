@@ -36,7 +36,8 @@ def main():
         description='Scrapes Beeradvocate for ratings data.'
     )
     arg_parser.add_argument('--url', help='A particular url to be scraped.')
-    arg_parser.add_argument('--styles', help='Will scrape the tops beers from each style.',
+    arg_parser.add_argument('--styles', help='Will scrape the tops beers'
+                                             ' from each style.',
                             action='store_true')
     args = arg_parser.parse_args()
     if args.url is not None:
