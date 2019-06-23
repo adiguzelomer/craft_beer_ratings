@@ -75,8 +75,12 @@ attempt to develop a recommender system for craft beers.
 Even better, develop a homebrew recipe generator.
 
 ### My approach
+For this upcoming capstone, I intend to keep things relatively simple at first. So, I'll build a simpler model that can predict a beers rating based on the content of the reviews of this beer. While this may not sound so exciting (since good reviews will clearly correlate with good ratings), I hope that I'll be able to give some insight into which characteristics lead to good ratings. In this way, I will be able to make recommendations about producing beers that people enjoy.
+
+If that phase goes well, I'll attempt to build a model that can recommend home-brewing recipes for beers based on the qualities that one would like to build.
 
 ### User interaction
+I intend to build an interactive application where users can explore the model that I build and see what characteristics are associated with positive ratings for beers of each style.
 
 ### Data sources
 [Beeradvocate](https://www.beeradvocate.com/) has a large number of data on
