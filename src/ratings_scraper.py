@@ -219,6 +219,8 @@ def scrape_beer_profile(url):
 
     beer_data.update(get_beer_stats(soup))
 
+    beer_data['reviews'] = get_beer_reviews(url, beer_data['review_count'])
+
     return beer_data
 
 
@@ -295,13 +297,13 @@ def get_beer_stats(soup):
             found.group(0).replace('#', '').replace(',', '')
         )
 
-    beer_stats['reviews'] = int(
+    beer_stats['review_count'] = int(
         stats_tag.find(
             lambda tag: tag.name == 'span' and tag.get('class') == ['ba-reviews']
         ).text.replace(',', '')
     )
 
-    beer_stats['ratings'] = int(
+    beer_stats['ratings_count'] = int(
         stats_tag.find(
             lambda tag: tag.name == 'span' and tag.get('class') == ['ba-ratings']
         ).text.replace(',', '')
@@ -358,6 +360,78 @@ def put_beer(beer, print_message=False):
     if print_message:
         print('PutItem succeeded:"')
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
+
+
+def get_beer_reviews(url, num_reviews):
+    '''
+    Returns a dictionary of all the reviews for the beer found at the url.
+
+    Parameters
+    ----------
+    url: string:
+     The url containing reviews
+
+    Returns
+    -------
+    reviews: dictionary:
+     The reviews
+    '''
+    beer_reviews = []
+
+    website = get_url(url)
+    if website is None:
+        return None
+
+    soup = BeautifulSoup(website.text, 'html5lib')
+
+    review_container = soup.find('div', {'id': 'rating_fullview'})
+    reviews = review_container.find_all('div', {'id': 'rating_fullview_container'})
+    r_list = []
+
+    for review in reviews:
+        r_dict = {}
+        # get author
+        user_tag = review.find('a', {'class': 'username'})
+        r_dict['author'] = user_tag['href']
+
+        # get ratings
+        #r_dict['overall'] = Decimal(review.find('span', {'class': 'BAscore_norm'}).text)
+        rating_string = review.find('span', {'class': 'muted'}).text
+        r_dict.update(parse_rating_string(rating_string))
+
+        r_dict['text'] = review.text
+
+        # add r_dict to the list of reviews
+        r_list.append(r_dict)
+
+
+    return r_list
+
+
+
+def parse_rating_string(rating_string='look: 5 | smell: 5 | taste: 5 | feel: 5 | overall: 5'):
+    '''
+    Parses a rating string, returning a dictionary.
+
+    Parameters
+    ----------
+    rating_string: string:
+     The string to be parsed.
+
+    Returns
+    -------
+    ratings_dict: dict:
+     A dictionary with key category and value rating.
+    '''
+
+    split_strings = rating_string.split(' | ')
+    r_dict = {}
+    for category in split_strings:
+        cat, rating = category.split(':')
+        cat = cat.replace(':', '').strip()
+        rating = decimal.Decimal(rating.strip())
+        r_dict[cat] = rating
+    return r_dict
 
 
 # The following class is taken from the AWS Tutorial found at:
