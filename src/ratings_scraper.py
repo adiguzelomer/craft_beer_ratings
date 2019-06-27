@@ -219,7 +219,8 @@ def scrape_beer_profile(url):
 
     beer_data.update(get_beer_stats(soup))
 
-    beer_data['reviews'] = get_beer_reviews(url, beer_data['review_count'])
+    time.sleep(2)
+    beer_data['reviews'] = get_all_beer_reviews(url, beer_data['review_count'])
 
     return beer_data
 
@@ -362,7 +363,27 @@ def put_beer(beer, print_message=False):
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
 
-def get_beer_reviews(url, num_reviews):
+def get_all_beer_reviews(url, num_reviews):
+    '''
+
+    '''
+    r_list = []
+    scraped_reviews = 0
+    reviews_per_page = 25
+
+    r_list.extend(get_beer_reviews(url))
+    scraped_reviews = len(r_list)
+
+    while scraped_reviews < num_reviews:
+        new_url = url + '?view=beer&sort=&start=' + (str(scraped_reviews))
+        time.sleep(2)
+        r_list.extend(get_beer_reviews(new_url))
+        scraped_reviews = len(r_list)
+
+    return r_list
+
+
+def get_beer_reviews(url):
     '''
     Returns a dictionary of all the reviews for the beer found at the url.
 
@@ -397,7 +418,8 @@ def get_beer_reviews(url, num_reviews):
         # get ratings
         #r_dict['overall'] = Decimal(review.find('span', {'class': 'BAscore_norm'}).text)
         rating_string = review.find('span', {'class': 'muted'}).text
-        r_dict.update(parse_rating_string(rating_string))
+        if ' | ' in rating_string:
+            r_dict.update(parse_rating_string(rating_string))
 
         r_dict['text'] = review.text
 
