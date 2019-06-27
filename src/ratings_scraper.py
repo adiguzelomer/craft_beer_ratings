@@ -360,7 +360,7 @@ def put_beer(beer, reviews, print_message=False):
     )
 
     for idx, review in enumerate(reviews):
-        review['review_id'] = beer['beer'] + str(idx)
+        review['review_id'] = ' '.joing([beer['brewery'], beer['beer'], str(idx)])
         review['beer'] = beer['beer']
         REVIEW_TABLE.put_item(Item=review)
 
