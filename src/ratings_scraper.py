@@ -29,6 +29,7 @@ BA_URLS = {
 AWS_REGION = 'us-east-2'
 DYNAMODB = boto3.resource('dynamodb', region_name=AWS_REGION)
 BEER_TABLE = DYNAMODB.Table('beers')
+REVIEW_TABLE = DYNAMODB.Table('reviews')
 BREWERY_TABLE = DYNAMODB.Table('breweries')
 
 def main():
@@ -46,8 +47,8 @@ def main():
         links = get_beer_profile_links(args.url)
 
         for link in links:
-            beer_data = scrape_beer_profile(link)
-            put_beer(beer_data)
+            beer_data, beer_reviews = scrape_beer_profile(link)
+            put_beer(beer_data, beer_reviews)
             time.sleep(5)
 
     elif args.styles:
@@ -58,8 +59,8 @@ def main():
             links = get_beer_profile_links(BA_URLS['style'].replace('<style_id>', id))
 
             for link in links:
-                beer_data = scrape_beer_profile(link)
-                put_beer(beer_data)
+                beer_data, beer_reviews= scrape_beer_profile(link)
+                put_beer(beer_data, beer_reviews )
                 time.sleep(5)
 
             print('Completed scraping this style: {}'.format(style))
@@ -220,9 +221,9 @@ def scrape_beer_profile(url):
     beer_data.update(get_beer_stats(soup))
 
     time.sleep(2)
-    beer_data['reviews'] = get_all_beer_reviews(url, beer_data['review_count'])
+    beer_reviews = get_all_beer_reviews(url, beer_data['review_count'])
 
-    return beer_data
+    return beer_data, beer_reviews
 
 
 def get_beer_info(soup):
@@ -341,7 +342,7 @@ def get_beer_stats(soup):
     return beer_stats
 
 
-def put_beer(beer, print_message=False):
+def put_beer(beer, reviews, print_message=False):
     """
     Loads the beer to the DynamoDB table.
 
@@ -358,6 +359,11 @@ def put_beer(beer, print_message=False):
         Item=beer
     )
 
+    for idx, review in enumerate(reviews):
+        review['review_id'] = beer['beer'] + str(idx)
+        review['beer'] = beer['beer']
+        REVIEW_TABLE.put_item(Item=review)
+
     if print_message:
         print('PutItem succeeded:"')
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
@@ -369,16 +375,17 @@ def get_all_beer_reviews(url, num_reviews):
     '''
     r_list = []
     scraped_reviews = 0
-    reviews_per_page = 25
 
-    r_list.extend(get_beer_reviews(url))
-    scraped_reviews = len(r_list)
+    cur_reviews = get_beer_reviews(url)
+    r_list.extend(cur_reviews)
+    scraped_reviews = len(cur_reviews)
 
     while scraped_reviews < num_reviews:
         new_url = url + '?view=beer&sort=&start=' + (str(scraped_reviews))
         time.sleep(2)
-        r_list.extend(get_beer_reviews(new_url))
-        scraped_reviews = len(r_list)
+        cur_reviews = get_beer_reviews(new_url)
+        r_list.extend(cur_reviews)
+        scraped_reviews += len(cur_reviews)
 
     return r_list
 
@@ -428,7 +435,6 @@ def get_beer_reviews(url):
 
 
     return r_list
-
 
 
 def parse_rating_string(rating_string='look: 5 | smell: 5 | taste: 5 | feel: 5 | overall: 5'):
