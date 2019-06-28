@@ -1,4 +1,5 @@
 import boto3
+from boto3.dynamodb.conditions import Key
 import pandas as pd
 
 
@@ -12,6 +13,9 @@ STRING_COLUMNS = ['beer', 'beer_url', 'brewery', 'brewery_profile_url', 'note', 
 NUM_COLUMNS = ['abv', 'gots', 'pdev', 'rank', 'rating', 'ratings_count', 'review_count', 'trade', 'wants']
 INT_COLUMNS = ['gots', 'rank', 'rating', 'ratings_count', 'review_count', 'trade', 'wants']
 FLOAT_COLUMNS = ['abv', 'pdev', 'rating']
+
+REVIEW_STRING_COLUMNS = ['author', 'beer', 'review_id', 'text']
+REVIEW_NUM_COLUMNS = ['feel', 'look', 'overall', 'smell', 'taste']
 
 def main():
     print("Nothing to see here. This file is meant to be imported.")
@@ -42,15 +46,18 @@ def get_reviews_df(beers: list, n: int=20) -> pd.DataFrame:
     Returns a Pandas DataFrame object consisting of the first n reviews for every beer
     in beer list.
     '''
-    # Iterate through the list of beers and add those rows to a dataframe.
     reviews_df = pd.DataFrame()
+    
     for beer in beers:
-        response = REVIEW_TABLE.query(
-                #INPUT QUERY HERE
-        )
-        
-        reviews_df = pd.concat([reviews_df, pd.DataFrame(response['Items'])])
-        
+        # Iterate through the list of beers and add those rows to a dataframe.
+        for review in range(n):
+            response = REVIEW_TABLE.query(
+                    KeyConditionExpression=Key('review_id').eq(beers[0]+ ' ' + str(review))
+            )
+            reviews_df = pd.concat([reviews_df, pd.DataFrame(response['Items'])])
+    
+    reviews_df[REVIEW_STRING_COLUMNS] = reviews_df[REVIEW_STRING_COLUMNS].astype(str)
+    reviews_df[REVIEW_NUM_COLUMNS] = reviews_df[REVIEW_NUM_COLUMNS].astype(float)
     return reviews_df
     
     
