@@ -37,11 +37,23 @@ def get_beer_df():
     # beer_df[FLOAT_COLUMNS] = beer_df[FLOAT_COLUMNS].astype(float)
     return beer_df
 
-def get_reviews_df(beers: list, n: int=1) -> pd.DataFrame:
+def get_reviews_df(beers: list, n: int=20) -> pd.DataFrame:
     '''
     Returns a Pandas DataFrame object consisting of the first n reviews for every beer
     in beer list.
     '''
+    # Iterate through the list of beers and add those rows to a dataframe.
+    reviews_df = pd.DataFrame()
+    for beer in beers:
+        response = REVIEW_TABLE.query(
+                #INPUT QUERY HERE
+        )
+        
+        reviews_df = pd.concat([reviews_df, pd.DataFrame(response['Items'])])
+        
+    return reviews_df
+    
+    
     
     return pd.DataFrame()
 
