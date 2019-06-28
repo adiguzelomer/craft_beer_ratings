@@ -31,6 +31,22 @@ DYNAMODB = boto3.resource('dynamodb', region_name=AWS_REGION)
 BEER_TABLE = DYNAMODB.Table('beers')
 REVIEW_TABLE = DYNAMODB.Table('reviews')
 BREWERY_TABLE = DYNAMODB.Table('breweries')
+STYLE_SKIP_LIST = set([
+    'german bock', 'german doppelbock', 'german eisbock', 'german maibock', 'german weizenbock',
+    'american brown ale', 'english brown ale', 'english dark mild ale', 'german altbier', 'american black ale',
+    'belgian dark ale', 'belgian dubbel', 'german roggenbier', 'scottish ale', 'winter warmer', 'american amber / red lager',
+    'european dark lager', 'german märzen / oktoberfest', 'german rauchbier', 'german schwarzbier', 'munich dunkel lager',
+    'vienna lager', 'american cream ale', 'bière de champagne / bière brut', 'braggot', 'california common / steam beer',
+    'american brut ipa', 'american imperial ipa', 'american ipa', 'belgian ipa', 'english india pale ale (ipa)', 'new england ipa',
+    'american amber / red ale', 'american blonde ale', 'american pale ale (apa)', 'belgian blonde ale ', 'belgian pale ale',
+    'belgian saison', 'english bitter', 'english extra special / strong bitter (esb)', 'english pale ale', 'english pale mild ale',
+    'french bière de garde', 'german kölsch', 'irish red ale', 'american adjunct lager', 'american imperial pilsner', 'american lager',
+    'american light lager', 'american malt liquor', 'bohemian pilsener', 'european export / dortmunder', 'european pale lager',
+    'european strong lager', 'german helles', 'german kellerbier / zwickelbier', 'german pilsner', 'american imperial porter',
+    'american porter', 'baltic porter'
+    ]
+)
+
 
 def main():
     arg_parser = argparse.ArgumentParser(
@@ -55,15 +71,16 @@ def main():
         style_ids = get_style_ids()
 
         for style, id in style_ids.items():
-            print('Now scraping this style: {}'.format(style))
-            links = get_beer_profile_links(BA_URLS['style'].replace('<style_id>', id))
+            if style not in STYLE_SKIP_LIST:
+                print('Now scraping this style: {}'.format(style))
+                links = get_beer_profile_links(BA_URLS['style'].replace('<style_id>', id))
 
-            for link in links:
-                beer_data, beer_reviews= scrape_beer_profile(link)
-                put_beer(beer_data, beer_reviews )
-                time.sleep(5)
+                for link in links:
+                    beer_data, beer_reviews= scrape_beer_profile(link)
+                    put_beer(beer_data, beer_reviews )
+                    time.sleep(5)
 
-            print('Completed scraping this style: {}'.format(style))
+                print('Completed scraping this style: {}'.format(style))
 
 
     return 0
@@ -380,7 +397,7 @@ def get_all_beer_reviews(url, num_reviews):
     r_list.extend(cur_reviews)
     scraped_reviews = len(cur_reviews)
 
-    while scraped_reviews < num_reviews:
+    while len(cur_reviews) > 0:
         new_url = url + '?view=beer&sort=&start=' + (str(scraped_reviews))
         time.sleep(2)
         cur_reviews = get_beer_reviews(new_url)
