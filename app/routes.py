@@ -9,3 +9,7 @@ def index():
 @app.route('/styles.html')
 def styles():
     return render_template('styles.html', title='Styles and Beer')
+
+@app.route('/base.html')
+def base():
+    return render_template('base.html', title='Base')
