@@ -67,14 +67,16 @@ def get_reviews_df(beers: list, n: int = 20) -> pd.DataFrame:
                         beers[0] + ' ' + str(review)
                     )
             )
-            reviews_df = pd.concat([
-                reviews_df, pd.DataFrame(response['Items'])
-            ])
+            reviews_df = pd.concat(
+                [reviews_df, pd.DataFrame(response['Items'])]
+                )
 
-    reviews_df[REVIEW_STRING_COLUMNS] = reviews_df[REVIEW_STRING_COLUMNS] \
-        .astype(str)
-    reviews_df[REVIEW_NUM_COLUMNS] = reviews_df[REVIEW_NUM_COLUMNS] \
-        .astype(float)
+    reviews_df[REVIEW_STRING_COLUMNS] = (
+        reviews_df[REVIEW_STRING_COLUMNS].astype(str)
+        )
+    reviews_df[REVIEW_NUM_COLUMNS] = (
+        reviews_df[REVIEW_NUM_COLUMNS].astype(float)
+        )
     return reviews_df
 
 
@@ -90,10 +92,12 @@ def get_all_reviews_df():
         reviews_df = pd.concat([reviews_df, pd.DataFrame(response['Items'])])
         last_key = response.get('LastEvaluatedKey', None)
 
-    reviews_df[REVIEW_STRING_COLUMNS] = reviews_df[REVIEW_STRING_COLUMNS] \
-        .astype(str)
-    reviews_df[REVIEW_NUM_COLUMNS] = reviews_df[REVIEW_NUM_COLUMNS] \
-        .astype(float)
+    reviews_df[REVIEW_STRING_COLUMNS] = (
+        reviews_df[REVIEW_STRING_COLUMNS].astype(str)
+        )
+    reviews_df[REVIEW_NUM_COLUMNS] = (
+        reviews_df[REVIEW_NUM_COLUMNS].astype(float)
+        )
     return reviews_df
 
 
