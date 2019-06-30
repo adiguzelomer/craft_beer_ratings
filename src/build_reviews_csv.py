@@ -9,7 +9,7 @@ def main():
     print(cur_dir_path)
     filename = os.path.join(cur_dir_path, os.path.pardir, 'data/reviews.csv')
     print(filename)
-    reviews_df = db.get_all_reviews_df(True)
+    reviews_df = db.get_all_reviews_df()
     reviews_df.to_csv(filename, index=False)
 
     return 0
