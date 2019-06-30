@@ -80,17 +80,21 @@ def get_reviews_df(beers: list, n: int = 20) -> pd.DataFrame:
     return reviews_df
 
 
-def get_all_reviews_df():
+def get_all_reviews_df(is_test: bool = False):
     '''
     Returns a Pandas DataFrame object consisting of all reviews.
     '''
     response = REVIEW_TABLE.scan()
     reviews_df = pd.DataFrame(response['Items'])
     last_key = response.get('LastEvaluatedKey', None)
+    counter = 0
     while last_key is not None:
         response = REVIEW_TABLE.scan(ExclusiveStartKey=last_key)
         reviews_df = pd.concat([reviews_df, pd.DataFrame(response['Items'])])
         last_key = response.get('LastEvaluatedKey', None)
+        counter +=1
+        if is_test and counter >= 10:
+            break
 
     reviews_df[REVIEW_STRING_COLUMNS] = (
         reviews_df[REVIEW_STRING_COLUMNS].astype(str)
