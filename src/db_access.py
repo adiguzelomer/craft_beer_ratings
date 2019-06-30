@@ -1,6 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 import pandas as pd
+import os
 
 
 AWS_REGION = 'us-east-2'
@@ -105,6 +106,50 @@ def get_all_reviews_df(is_test: bool = False):
         reviews_df[REVIEW_NUM_COLUMNS].astype(float)
         )
     return reviews_df
+
+def write_reviews_csv(is_test=False):
+    """
+    Write a csv file with the reviews table.
+    """
+
+    response = REVIEW_TABLE.scan()
+    reviews_df = pd.DataFrame(response['Items'])
+    last_key = response.get('LastEvaluatedKey', None)
+    counter = 0
+    cur_dir_path = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(cur_dir_path, os.path.pardir, 'data/reviews.csv')
+
+    reviews_df[REVIEW_STRING_COLUMNS] = (
+        reviews_df[REVIEW_STRING_COLUMNS].astype(str)
+        )
+    reviews_df[REVIEW_NUM_COLUMNS] = (
+        reviews_df[REVIEW_NUM_COLUMNS].astype(float)
+        )
+
+    reviews_df.to_csv(filename, index=False)
+
+    while last_key is not None:
+        response = REVIEW_TABLE.scan(ExclusiveStartKey=last_key)
+        reviews_df = pd.DataFrame(response['Items'])
+
+        reviews_df[REVIEW_STRING_COLUMNS] = (
+            reviews_df[REVIEW_STRING_COLUMNS].astype(str)
+        )
+        reviews_df[REVIEW_NUM_COLUMNS] = (
+            reviews_df[REVIEW_NUM_COLUMNS].astype(float)
+        )
+
+        reviews_df.to_csv(filename, index=False, header=False, mode='a')
+
+        last_key = response.get('LastEvaluatedKey', None)
+        counter +=1
+        if is_test and counter >= 10:
+            break
+        elif counter % 5 == 0:
+            print('LastEvaluatedKey: {}'.format(last_key), 'Counter: {}'.format(str(counter)))
+
+
+    return None
 
 
 if __name__ == "__main__":
