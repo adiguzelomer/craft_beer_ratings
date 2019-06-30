@@ -95,6 +95,8 @@ def get_all_reviews_df(is_test: bool = False):
         counter +=1
         if is_test and counter >= 10:
             break
+        elif counter % 50 == 0:
+            print('LastEvaluatedKey: {}'.format(last_key), 'Counter: {}'.format(str(counter)))
 
     reviews_df[REVIEW_STRING_COLUMNS] = (
         reviews_df[REVIEW_STRING_COLUMNS].astype(str)
