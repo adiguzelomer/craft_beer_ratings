@@ -13,13 +13,63 @@ def main():
     print('Nothing to see here. Import this file instead.')
     return 0
 
-def clean_documents(documents: np.array) -> np.array:
+
+def load_data(beers_fpath, reviews_fpath, n_beers: int = None) -> tuple:
+    """Loads the beer and review dataframes.
+    """
+    # Load the beer and reviews dataframes
+    beers_df = pd.read_csv(beers_fpath)
+
+    if n_beers is not None:
+        beers_sample = beers_df.sample(n_beers)
+    else:
+        beers_sample = beers_df
+
+    # Add the review_id column, and the brew_beer column
+    beers_sample = add_review_id_col(beers_sample)
+    reviews_df = pd.read_csv(reviews_fpath)
+    reviews_df = get_brew_beer_col(reviews_df)
+
+    if n_beers is not None:
+        reviews_sample = get_reviews_sample(
+            reviews_df,
+            list(beers_sample['review_id'])
+        )
+    else:
+        reviews_sample = reviews_df
+
+    # Reset indices
+    beers_sample.reset_index(inplace=True, drop=True)
+    reviews_sample.reset_index(inplace=True, drop=True)
+
+    return beers_sample, reviews_sample
+
+
+def add_review_id_col(beers_df: pd.DataFrame) -> pd.DataFrame:
+    """Adds the review_id column to the beers dataframe.
+    """
+    beers_df['review_id'] = beers_df['brewery'] + ' ' + beers_df['beer']
+    return beers_df
+
+
+def get_reviews_sample(reviews_df: pd.DataFrame, review_ids:list, n_reviews: int=None):
+    """Returns the dataframe with requested reviews.
+    """
+    reviews_sample = reviews_df[reviews_df['brew_beer'].isin(review_ids)]
+    return reviews_sample
+
+def clean_documents(documents: np.array) -> list:
     """Given an np.array of documents, returns a np.array of documents
     that have had stopwords removed and passed through the Lancaster
     Stemmer.
     """
+
     new_docs = [remove_bad_text(document) for document in documents]
+    new_docs = strip_punc(new_docs)
+    new_docs = stem_and_rem_stopwords(new_docs)
+
     return new_docs
+
 
 def get_brew_beer_col(reviews_df: pd.DataFrame) -> pd.DataFrame:
     """Returns the updated dataframe.
@@ -30,11 +80,13 @@ def get_brew_beer_col(reviews_df: pd.DataFrame) -> pd.DataFrame:
 
     return reviews_df
 
+
 def get_review_number(review_id: str) -> tuple:
     """Returns the review number from the review id.
     """
     match = re.match('(.*?)([0-9]+)$', review_id)
     return match.group(1).strip(), int(match.group(2))
+
 
 def remove_bad_text(text: str) -> str:
     """Given a review string, removes most of the bad text found
@@ -45,8 +97,6 @@ def remove_bad_text(text: str) -> str:
 
     cut_text = text # .replace('\n', ' ')
     # Strip front to 'overall: X.X'
-    # print("NEW DOCUMENT")
-    # print(repr(cut_text))
     result = re.search('(?<=overall:\s\d)((.|\n)*)', cut_text)
     if result is not None:
         cut_text = result.group(0)
@@ -73,6 +123,7 @@ def strip_punc(documents: list, punc = '.!,;:\'"\(\)\[\]\n/') -> list:
     documents = [rgx.sub(' ', document.lower()) for document in documents]
 
     return documents
+
 
 def stem_and_rem_stopwords(documents:list, additional_stopwords: list = []):
     """Returns a list of documents that have been stemmed and

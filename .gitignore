@@ -5,3 +5,4 @@
 *.csv
 *.txt
 *.ipynb_checkpoints
+*.pkl
