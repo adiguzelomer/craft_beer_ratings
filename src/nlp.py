@@ -26,12 +26,12 @@ def load_data(beers_fpath, reviews_fpath, n_beers: int = None) -> tuple:
         beers_sample = beers_df
 
     # Add the review_id column, and the brew_beer column
-    beers_sample = nlp.add_review_id_col(beers_sample)
+    beers_sample = add_review_id_col(beers_sample)
     reviews_df = pd.read_csv(reviews_fpath)
-    reviews_df = nlp.get_brew_beer_col(reviews_df)
+    reviews_df = get_brew_beer_col(reviews_df)
 
     if n_beers is not None:
-        reviews_sample = nlp.get_reviews_sample(
+        reviews_sample = get_reviews_sample(
             reviews_df,
             list(beers_sample['review_id'])
         )
