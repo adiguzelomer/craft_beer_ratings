@@ -68,22 +68,22 @@ def main():
     W = nmf_model.fit_transform(tf_idf)
 
     # Pickle the results
-    with open('pickles/W.pkl', 'wb') as p:
+    with open('pickles/second_model/W.pkl', 'wb') as p:
         pickle.dump(W, p)
 
-    with open('pickles/NMF.pkl', 'wb') as p:
+    with open('pickles/second_model/NMF.pkl', 'wb') as p:
         pickle.dump(nmf_model, p)
 
-    with open('pickles/TF-IDF-Vectorizer.pkl', 'wb') as p:
+    with open('pickles/second_model/TF-IDF-Vectorizer.pkl', 'wb') as p:
         pickle.dump(tf_idf_vectorizer, p)
 
-    with open('pickles/TF-IDF.pkl', 'wb') as p:
+    with open('pickles/second_model/TF-IDF.pkl', 'wb') as p:
         pickle.dump(tf_idf, p)
 
-    upload_file('pickles/W.pkl', 'brett-craft-beer')
-    upload_file('pickles/NMF.pkl', 'brett-craft-beer')
-    upload_file('pickles/TF-IDF-Vectorizer.pkl', 'brett-craft-beer')
-    upload_file('pickles/TF-IDF.pkl', 'brett-craft-beer')
+    upload_file('pickles/second_model/W.pkl', 'brett-craft-beer')
+    upload_file('pickles/second_model/NMF.pkl', 'brett-craft-beer')
+    upload_file('pickles/second_model/TF-IDF-Vectorizer.pkl', 'brett-craft-beer')
+    upload_file('pickles/second_model/TF-IDF.pkl', 'brett-craft-beer')
 
     return 0
 
