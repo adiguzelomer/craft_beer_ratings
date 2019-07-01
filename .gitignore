@@ -1,7 +1,7 @@
 *.pyc
-*.ipynb
 .vscode/settings.json
 .pytest_cache/v/cache/stepwise
 .pytest_cache/v/cache/nodeids
 *.csv
 *.txt
+*.ipynb_checkpoints
