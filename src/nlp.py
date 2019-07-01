@@ -85,7 +85,7 @@ def stem_and_rem_stopwords(documents:list, additional_stopwords: list = []):
     for document in documents:
         tokens = document.split()
         processed_documents.append(
-            ' '.join([token for token in tokens if token not in s_words])
+            ' '.join([stemmer.stem(token) for token in tokens if token not in s_words])
             )
 
     return processed_documents
