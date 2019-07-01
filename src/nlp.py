@@ -27,12 +27,16 @@ def get_reviews_sample(reviews_df: pd.DataFrame, review_ids:list, n_reviews: int
     reviews_sample = reviews_df[reviews_df['brew_beer'].isin(review_ids)]
     return reviews_sample
 
-def clean_documents(documents: np.array) -> np.array:
+def clean_documents(documents: np.array) -> list:
     """Given an np.array of documents, returns a np.array of documents
     that have had stopwords removed and passed through the Lancaster
     Stemmer.
     """
+
     new_docs = [remove_bad_text(document) for document in documents]
+    new_docs = strip_punc(new_docs)
+    new_docs = stem_and_rem_stopwords(new_docs)
+
     return new_docs
 
 

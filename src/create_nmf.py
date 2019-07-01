@@ -15,6 +15,9 @@ import argparse
 import numpy as np
 import pandas as pd
 
+from sklearn.decomposition import NMF
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)))))
 import nlp
 
@@ -36,37 +39,32 @@ def main():
         '--reviews_csv', default=os.environ['REVIEWS_CSV'],
         help='The location of the reviews csv.'
     )
+    arg_parser.add_argument(
+        '--max_df', default=.95,
+        help='The maximum document frequency.'
+    )
+    arg_parser.add_argument(
+        '--max_features', default=5000
+        help='The maximum number of features to consider.'
+    )
+    arg_parser.add_argument(
+        '--n_topics', default=15,
+        help='The maximum number of topics to assess.'
+    )
     args = arg_parser.parse_args()
 
-    beers_df, reviews_df = load_data(args.beers_csv, args.reviews_csv, args.n_beers)
+    beers_df, reviews_df = nlp.load_data(args.beers_csv, args.reviews_csv, args.n_beers)
+    reviews = nlp.clean_documents(reviews_df['text'].values)
+
+    # Create TF-IDF matrix
+    tf_idf_vectorizer = TfidfVectorizer(
+        max_df=args.max_df, max_features=args.max_features
+        )
+    tf_idf = tf_idf_vectorizer.fit_transform(reviews)
 
     return 0
 
-def load_data(beers_fpath, reviews_fpath, n_beers: int = None) -> tuple:
-    """Loads the beer and review dataframes.
-    """
-    # Load the beer and reviews dataframes
-    beers_df = pd.read_csv(beers_fpath)
 
-    if n_beers is not None:
-        beers_sample = beers_df.sample(n_beers)
-    else:
-        beers_sample = beers_df
-
-    # Add the review_id column, and the brew_beer column
-    beers_sample = nlp.add_review_id_col(beers_sample)
-    reviews_df = pd.read_csv(reviews_fpath)
-    reviews_df = nlp.get_brew_beer_col(reviews_df)
-
-    if n_beers is not None:
-        reviews_sample = nlp.get_reviews_sample(
-            reviews_df,
-            list(beers_sample['review_id'])
-        )
-    else:
-        reviews_sample = reviews_df
-
-    return beers_sample, reviews_sample
 
 if __name__ == "__main__":
     main()
