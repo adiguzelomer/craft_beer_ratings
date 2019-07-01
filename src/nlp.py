@@ -1,4 +1,5 @@
 import nltk
+from nltk.tokenize import SpaceTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer
 
@@ -18,9 +19,6 @@ def clean_documents(documents: np.array) -> np.array:
     Stemmer.
     """
     new_docs = [remove_bad_text(document) for document in documents]
-    s_words = stopwords.words('english')
-    stemmer = LancasterStemmer()
-
     return new_docs
 
 def get_brew_beer_col(reviews_df: pd.DataFrame) -> pd.DataFrame:
@@ -66,3 +64,28 @@ def remove_bad_text(text: str) -> str:
         cut_text = cut_text[2:]
 
     return cut_text
+
+
+def strip_punc(documents: list, punc = '.!,;:\'"\(\)\[\]\n/') -> list:
+    '''Given documents, return the documents with punctuation removed.
+    '''
+    rgx = re.compile('[{}]'.format(punc))
+    documents = [rgx.sub(' ', document.lower()) for document in documents]
+
+    return documents
+
+def stem_and_rem_stopwords(documents:list, additional_stopwords: list = []):
+    """Returns a list of documents that have been stemmed and
+    had stopwords removed.
+    """
+    s_words = set(stopwords.words('english') + additional_stopwords)
+    stemmer = LancasterStemmer()
+
+    processed_documents =[]
+    for document in documents:
+        tokens = document.split()
+        processed_documents.append(
+            ' '.join([token for token in tokens if token not in s_words])
+            )
+
+    return processed_documents
