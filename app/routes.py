@@ -1,19 +1,19 @@
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for
 from app import app
 from app.forms import ReviewForm
 
 @app.route('/')
 @app.route('/index.html')
 def index():
-    return render_template('base.html', title='What makes a good beer?')
+    return render_template(url_for('index'), title='What makes a good beer?')
 
-@app.route('/desc-stats.html')
+@app.route('/desc_stats.html')
 def desc_stats():
-    return render_template('desc-stats.html', title='Descriptive Statistics')
+    return render_template(url_for('desc_stats.html), title='Descriptive Statistics')
 
 @app.route('/clustering.html')
 def clustering():
-    return render_template('clustering.html', title="Clustering")
+    return render_template(url_for('clustering'), title="Clustering")
 
 @app.route('/review.html', methods=['GET', 'POST'])
 def review():
@@ -21,8 +21,8 @@ def review():
     if form.validate_on_submit():
         flash('Analyzing your review.')
         return redirect('/index.html')
-    return render_template('review.html', title='Check a Review', form=form)
+    return render_template(url_for('review'), title='Check a Review', form=form)
 
 @app.route('/base.html')
 def base():
-    return render_template('base.html', title='Base')
+    return render_template(url_for('base'), title='Base')
