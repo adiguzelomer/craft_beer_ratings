@@ -76,3 +76,34 @@ about how the reviews are categorized, and, further, to understand the relations
 With this information, I am now ready to make some basic recommendations based on a user-submitted review.
 
 ## How does that work?
+The process is very similar to what I've talked about so far. The review, once submitted, is cleaned and transformed
+into a set of TF-IDF values. Then, this vector is multiplied with the matrix that relates categories to words. (That matrix must be transposed in order to have the proper shape for matrix multiplication.) And the resulting vector tells
+us the relationship between the review and the categories that were created earlier during NMF.
+
+From there, I merely find reviews that are strongly related to the topic the review is strongly related to and
+recommend that the user try those beers!
+
+# Where to go from here?
+
+## Features
+There are number of features that I'd like to add to this application.
+<li> A more complex recommendation system.
+<li> A dendogram based that shows which beers are closely related to the review.
+<li> A recommendation system based on a set of beers rather than one review.
+
+## Experimentation
+I'd like to explore a few different modelling options that may improve performance.
+<li> Use a different distance metric.
+<li> Incorporate information outside the review into the algorithm.
+<li> Expand the dataset used to train the model.
+
+# How'd the process go?
+Here's a quick look at some of the lessons learned so far:
+
+<li> I learned some lessons about using Amazon's NoSQL database.
+My implementation didn't fully utilize the available indexing features.
+<li> I learned quite a bit about implementing a Flask application, but there
+is still a lot to learn. The next step here is to deploy this application that
+isn't my laptop!
+<li> I implemented some principles of OOP and separation of concerns but I think
+that I can do better. In particular, the organization of the flask app can be improved.
