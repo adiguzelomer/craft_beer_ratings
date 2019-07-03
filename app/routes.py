@@ -18,7 +18,7 @@ def clustering():
 @app.route('/review.html')
 def review():
     form = ReviewForm()
-    return render_template('login.html', title='Check a Review', form=form)
+    return render_template('review.html', title='Check a Review', form=form)
 
 @app.route('/base.html')
 def base():
