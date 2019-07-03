@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, flash, redirect
 from app import app
 from app.forms import ReviewForm
 
@@ -15,9 +15,12 @@ def desc_stats():
 def clustering():
     return render_template('clustering.html', title="Clustering")
 
-@app.route('/review.html')
+@app.route('/review.html', methods=['GET', 'POST'])
 def review():
     form = ReviewForm()
+    if form.validate_on_submit():
+        flash('Analyzing your review.')
+        return redirect('/index.html')
     return render_template('review.html', title='Check a Review', form=form)
 
 @app.route('/base.html')
