@@ -15,7 +15,7 @@ def desc_stats():
 def clustering():
     return render_template('clustering.html', title="Clustering")
 
-@app.rout('/review.html')
+@app.route('/review.html')
 def review():
     form = ReviewForm()
     return render_template('login.html', title='Check a Review', form=form)
