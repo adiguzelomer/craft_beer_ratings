@@ -7,6 +7,9 @@
         <p>
             {{ form.beer_review.label }} <br>
             {{ form.beer_review(size=200) }}
+            {% for error in form.beer_review.errors %}
+            <span style="color: red;">[{{ error}}]</span>
+            {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
     </form>
