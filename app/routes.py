@@ -20,7 +20,8 @@ def review():
     form = ReviewForm()
     if form.validate_on_submit():
         flash('Analyzing your review.')
-        return redirect('/index.html')
+        flash(form.beer_review.data)
+        return redirect(url_for('review'))
     return render_template(url_for('review'), title='Check a Review', form=form)
 
 @app.route('/base.html')
