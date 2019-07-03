@@ -26,8 +26,7 @@ used to describe those beers.
 
 ## What statistical patterns?
 
-For this project, I chose to use TF-IDF
-([Term Frequency-Inverse Document Frequency](https://en.wikipedia.org/wiki/Tf%E2%80%93idf))
+For this project, I chose to use [TF-IDF (Term Frequency-Inverse Document Frequency](https://en.wikipedia.org/wiki/Tf%E2%80%93idf))
 to transform raw text into a format that a computer can analyze. TF-IDF is simply a number
 that increases as a word is used in a document and decreases as the word appears in a larger portion of documents.
 
@@ -51,3 +50,29 @@ lists on top of one another to form a matrix. It might look something like this:
 Here each row represents one of the reviews, and each column represents the TF-IDF value associated with a single word.
 
 ## What do you do with that matrix?
+I chose to use
+[NMF (Non-Negative Matrix Factorization)](https://en.wikipedia.org/wiki/Non-negative_matrix_factorization)
+for this project because it provides a reasonable degree of interpretibility when compared to similar methods.
+For example, [SVD (Singular Value Decomposition)](https://en.wikipedia.org/wiki/Singular_value_decomposition),
+or [PCA (Principal Component Analysis)](https://en.wikipedia.org/wiki/Principal_component_analysis).
+
+## And what does NMF do?
+So, given our matrix of TF-IDF values (or a document-term matrix), I'd like to understand how these documents and
+terms are related to each other. NMF gives us a means to that understanding since the result of NMF is a pair of
+matrices that represent the relationship of each document to each category and each category to each category to
+each term.
+
+NMF determines these matrices by performing alternating non-negative least squares regression. Which,
+I know, may not be a super helpful way of describing the process. Here's an attempt to do better.
+Our goal here, is to get two matrices that when multiplied result in a very close approximation of our document-
+term matrix. We do that by incrementally improving those to matrices through least squares regression.
+With each iteration, our results get closer and closer to the original document-term matrix. We stop once we are
+satisfied with the quality of our approximation.
+
+## And then what?
+
+Well, that's pretty much the hard part! At this point, I have the resources to begin extracting some information
+about how the reviews are categorized, and, further, to understand the relationship these categories have to words.
+With this information, I am now ready to make some basic recommendations based on a user-submitted review.
+
+## How does that work?
