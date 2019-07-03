@@ -43,9 +43,9 @@ Yep! Recall that I have to transform all of the reviews into a format that a com
 I've chosen to use TF-IDF. So, I transform all the documents into a list of TF-IDF numbers and stack each of these
 lists on top of one another to form a matrix. It might look something like this:
 
-[0, 1, 4, 8, 7]
-[7, 5, 8, 9, 5]
-[9, 5, 0, 1, 1]
+[0, 1, 4, 8, 7]<br>
+[7, 5, 8, 9, 5]<br>
+[9, 5, 0, 1, 1]<br>
 
 Here each row represents one of the reviews, and each column represents the TF-IDF value associated with a single word.
 
