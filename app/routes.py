@@ -9,7 +9,7 @@ def index():
 
 @app.route('/desc_stats.html')
 def desc_stats():
-    return render_template(url_for('desc_stats.html'), title='Descriptive Statistics')
+    return render_template(url_for('desc_stats'), title='Descriptive Statistics')
 
 @app.route('/clustering.html')
 def clustering():
