@@ -1,4 +1,4 @@
-*.pyc
+.flaskenv
 .vscode/settings.json
 .pytest_cache/v/cache/stepwise
 .pytest_cache/v/cache/nodeids
@@ -6,3 +6,4 @@
 *.txt
 *.ipynb_checkpoints
 *.pkl
+*.pyc
