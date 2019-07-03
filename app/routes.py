@@ -1,5 +1,6 @@
 from flask import render_template
 from app import app
+from app.forms import ReviewForm
 
 @app.route('/')
 @app.route('/index.html')
@@ -14,13 +15,11 @@ def desc_stats():
 def clustering():
     return render_template('clustering.html', title="Clustering")
 
-@app.route('/styles.html')
-def styles():
-    return render_template('styles.html', title='Styles and Beer')
+@app.rout('/review.html')
+def review():
+    form = ReviewForm()
+    return render_template('login.html', title='Check a Review', form=form)
 
-@app.route('/scatter.html')
-def scatter():
-    return render_template('scatter.html', title='Scatter')
 @app.route('/base.html')
 def base():
     return render_template('base.html', title='Base')
