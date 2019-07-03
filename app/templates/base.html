@@ -33,8 +33,17 @@
 									</ul>
 								</header>
 
+							{% with messages = get_flashed_messages() %}
+							{% if messages %}
+							<ul>
+								{% for message in messages %}
+								<li>{{ message }}</li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+							{% endwith %}
 
-						{% block content %}{% endblock %}
+							{% block content %}{% endblock %}
 
 
 					</div>
@@ -56,11 +65,10 @@
 										<h2>Menu</h2>
 									</header>
 									<ul>
-										<li><a href="index.html">Homepage</a></li>
-										<li><a href="desc-stats.html">Descriptive Statistics</a></li>
-										<li><a href="clustering.html">Clustering</a></li>
-										<li><a href="styles.html">Styles</a></li>
-										<li><a href="elements.html">Reviews and Ratings</a></li>
+										<li><a href="{{ url_for('index') }}">Homepage</a></li>
+										<li><a href="{{ url_for('desc_stats') }}">Descriptive Statistics</a></li>
+										<li><a href="{{ url_for('clustering') }}">Clustering</a></li>
+										<li><a href="{{ url_for('review') }}">Submit a Review</a></li>
 										<li>
 											<span class="opener">Submenu</span>
 											<ul>
