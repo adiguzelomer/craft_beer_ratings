@@ -85,6 +85,17 @@ database.
 
 ## Challenges
 
+### Measuring the Results
+My recommender systems are based primarily on topic modelling techniques, which
+fall squarely in the realm of unsupervised learning. As such, quantifying the
+results of the model is difficult.
+
+### Diversity (Serendipity)
+Recommender systems often struggle to give recommendations that are diverse.
+For example, if a user loves Pale Ales, a model can recommend other Pale Ales
+but may struggle to identify new experiences (perhaps, a nice Stout) that the
+user would enjoy.
+
 ## First Steps
 
 ## References:
