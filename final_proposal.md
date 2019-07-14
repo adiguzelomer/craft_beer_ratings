@@ -112,6 +112,7 @@ systems in place. Once those are in place, those models will need to be trained
 and then the ensemble model must be built.
 
 ## References:
+
 1. http://www.recommend.beer/
 2. https://nycdatascience.com/blog/student-works/ninkasi-beer-recommender-system/
 3. http://ninkasibeer.herokuapp.com/
