@@ -54,9 +54,23 @@ For more information, see the groups blog
 https://nycdatascience.com/blog/student-works/ninkasi-beer-recommender-system/
 ).
 
-## Differences from the Existing Solutions
+## An Ensemble Approach
+
+Each of the recommender system's above has strengths and utilizes a subset of
+the available data to make its recommendations. I plan to improve upon these
+systems by creating an ensemble of recommenders and using their individual
+recommendations as the inputs for a final recommendation system.
+
+I intend to have three recommenders in the ensemble.
+1. A popularity/content-based recommender
+2. A content-based recommender
+3. A collaborative recommender
 
 ## Presentation
+
+I will deploy the recommender through a Flask application where users can input
+either some text about beers they enjoy or rate a few beers in order to receive
+recommendations.
 
 ## The Data
 
