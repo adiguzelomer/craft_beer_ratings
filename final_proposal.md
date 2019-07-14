@@ -86,17 +86,30 @@ database.
 ## Challenges
 
 ### Measuring the Results
+
 My recommender systems are based primarily on topic modelling techniques, which
 fall squarely in the realm of unsupervised learning. As such, quantifying the
 results of the model is difficult.
 
 ### Diversity (Serendipity)
+
 Recommender systems often struggle to give recommendations that are diverse.
 For example, if a user loves Pale Ales, a model can recommend other Pale Ales
 but may struggle to identify new experiences (perhaps, a nice Stout) that the
 user would enjoy.
 
+### Tuning
+
+With three models as inputs to a fourth model, there are quite a few hyper
+parameters to tune. This is not a trivial task and can have quite an impact on
+the models performance.
+
 ## First Steps
+
+Given that I currently have a minimally viable content-based recommender, and
+Flask application. I need to start by getting the other to recommendation
+systems in place. Once those are in place, those models will need to be trained
+and then the ensemble model must be built.
 
 ## References:
 1. http://www.recommend.beer/
