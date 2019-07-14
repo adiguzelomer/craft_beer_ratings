@@ -74,6 +74,15 @@ recommendations.
 
 ## The Data
 
+The data comprises, approximately, 700,000 reviews by 40,000 users about 9,000
+beers (at this time). I intend to continue scraping data in order to increase
+the variety of beers available on which to train the recommenders. The
+recommender can only recommend a beer that it has seen before, so the more
+data, the better.
+
+This data is currently housed on Amazon Web Services (AWS) in a DynamoDB NoSQL
+database.
+
 ## Challenges
 
 ## First Steps
