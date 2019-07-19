@@ -18,21 +18,21 @@ class ReviewProcessor:
         self.punctuation = '.!,;:\'"\(\)\[\]\n/'
         self.rgx = re.compile('[{}]'.format(self.punctuation))
         self.reviews_df = pd.read_csv(
-            '/Users/brettcastellanos/galvanize/craft_beer_ratings/data/clean_reviews.csv'
+            '/Users/brettcastellanos/galvanize/craft_beer_ratings/data/1-clean/clean_reviews.csv'
             )
         with open(
-            '/Users/brettcastellanos/galvanize/craft_beer_ratings/pickles/first_model/TF-IDF-Vectorizer.pkl',
+            '/Users/brettcastellanos/galvanize/craft_beer_ratings/models/1-nmf/TF-IDF-Vectorizer.pkl',
             'rb'
         ) as p:
             self.tfidf_vectorizer = pickle.load(p)
         self.stemmer = LancasterStemmer()
         with open(
-            '/Users/brettcastellanos/galvanize/craft_beer_ratings/pickles/first_model/NMF.pkl',
+            '/Users/brettcastellanos/galvanize/craft_beer_ratings/models/1-nmf/NMF.pkl',
             'rb'
         ) as p:
             self.NMF = pickle.load(p)
         with open(
-            '/Users/brettcastellanos/galvanize/craft_beer_ratings/pickles/first_model/W.pkl',
+            '/Users/brettcastellanos/galvanize/craft_beer_ratings/models/1-nmf/W.pkl',
             'rb'
         ) as p:
             self.W = pickle.load(p)
