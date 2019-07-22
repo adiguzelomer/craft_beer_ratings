@@ -29,12 +29,12 @@ class ReviewProcessor:
             self.tfidf_vectorizer = pickle.load(p)
         self.stemmer = LancasterStemmer()
         with open(
-            '/models/1-nmf/NMF.pkl',
+            'models/1-nmf/NMF.pkl',
             'rb'
         ) as p:
             self.NMF = pickle.load(p)
         with open(
-            '/models/1-nmf/W.pkl',
+            'models/1-nmf/W.pkl',
             'rb'
         ) as p:
             self.W = pickle.load(p)
