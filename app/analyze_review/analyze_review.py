@@ -1,9 +1,11 @@
 import sys
-sys.path.append('/Users/brettcastellanos/galvanize/craft_beer_ratings/src')
+# sys.path.append('/Users/brettcastellanos/galvanize/craft_beer_ratings/src')
 import re
 import pickle
 import pandas as pd
 import numpy as np
+import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer
 
