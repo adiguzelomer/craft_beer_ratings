@@ -27,14 +27,9 @@ def review():
     if form.validate_on_submit():
         global processor
         flash('Analyzing your review.')
-        flash(form.beer_review.data)
         clean_review = processor.clean_review(form.beer_review.data)
-        flash(clean_review)
         tf_idf_vec = processor.get_tfidf_vector(clean_review)
-        flash(str(tf_idf_vec))
         topic_vec = processor.get_topic_vector(tf_idf_vec)
-        flash(str(topic_vec))
-        flash(str(topic_vec.shape))
         for beer in processor.get_top_ten_reviews(argmax(topic_vec))['beer']:
                 flash(beer)
         return redirect(url_for('review'))
