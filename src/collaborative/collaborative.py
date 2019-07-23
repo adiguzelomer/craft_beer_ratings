@@ -31,7 +31,7 @@ class CollaborativeRecommender:
         self.similarity_mat = cosine_similarity(self.utility_mat)
 
     def _set_neighborhoods(self):
-        least_to_most_sim_indexes = np.argsort(self.item_sim_mat, 1)
+        least_to_most_sim_indexes = np.argsort(self.similarity_mat, 1)
         self.neighborhoods = least_to_most_sim_indexes[:, -self.neighborhood_size:]
 
     def predict(self, brew_beer: str ) -> list:
