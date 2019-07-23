@@ -3,6 +3,8 @@ from app import app
 from app.forms import ReviewForm
 from app.analyze_review.analyze_review import ReviewProcessor
 from numpy import argmax
+from src.popularity.popularity import PopularityRecommender
+import pandas as pd
 
 processor = ReviewProcessor()
 

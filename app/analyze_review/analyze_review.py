@@ -39,6 +39,10 @@ class ReviewProcessor:
         ) as p:
             self.W = pickle.load(p)
 
+        self.pop_recommender = PopularityRecommender()
+        beer_data = pd.read_csv('data/raw/beers.csv')
+        self.pop_recommender.fit(beer_data)
+
         return None
 
     def get_top_ten_reviews(self, topic_idx):
