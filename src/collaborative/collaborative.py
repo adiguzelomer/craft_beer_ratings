@@ -52,6 +52,6 @@ class CollaborativeRecommender:
         # Get the brew_beer's index
         brew_idx = self.brew_beers.index(brew_beer)
         # Gets the columns that have reviews for this beer
-        nearby_beers = self.similarity_mat[brew_idx].argsort()[:-(n+1):-1)]
+        nearby_beers = self.similarity_mat[brew_idx].argsort()[:-(n+1):-1]
         # Predictions go in here
         return [self.brew_beers[idx] for idx in nearby_beers]
