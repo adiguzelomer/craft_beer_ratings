@@ -34,14 +34,14 @@ class CollaborativeRecommender:
         least_to_most_sim_indexes = np.argsort(self.item_sim_mat, 1)
         self.neighborhoods = least_to_most_sim_indexes[:, -self.neighborhood_size:]
 
-    def predict(self, user_vector: np.array) -> list:
-        """Given a vector representing a user, returns a list of suggested
+    def predict(self, brew_beer: str ) -> list:
+        """Given a string representing a beer, returns a list of suggested
         beers.
 
         Parameters
         ----------
-        user_vector: np.array:
-          A vector of beer ratings
+        brew_beer: str:
+          A string with the brewery and beer
 
         Returns
         -------
