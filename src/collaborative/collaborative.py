@@ -24,7 +24,7 @@ class CollaborativeRecommender:
         None
         """
         pivot_table = reviews.pivot_table(
-            index='brew_beer', columns='author', values='overall')
+            index='brew_beer', columns='author', values='overall', fill_value=0)
         self.utility_mat = csr_matrix(pivot_table.values)
         self.users = list(pivot_table.columns)
         self.brew_beers = list(pivot_table.index)
