@@ -8,6 +8,7 @@ import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer
+from src.popularity.popularity import PopularityRecommender
 
 
 def main():
