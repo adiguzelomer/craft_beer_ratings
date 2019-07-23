@@ -8,6 +8,7 @@ import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer
+from src.popularity.popularity import PopularityRecommender
 
 
 def main():
@@ -38,6 +39,10 @@ class ReviewProcessor:
             'rb'
         ) as p:
             self.W = pickle.load(p)
+
+        self.pop_recommender = PopularityRecommender()
+        beer_data = pd.read_csv('data/raw/beers.csv')
+        self.pop_recommender.fit(beer_data)
 
         return None
 
