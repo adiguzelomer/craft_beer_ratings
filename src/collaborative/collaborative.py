@@ -32,9 +32,10 @@ class CollaborativeRecommender:
 
     def _set_neighborhoods(self):
         least_to_most_sim_indexes = np.argsort(self.similarity_mat, 1)
-        self.neighborhoods = least_to_most_sim_indexes[:, -self.neighborhood_size:]
+        self.neighborhoods = least_to_most_sim_indexes[
+            :, -self.neighborhood_size:]
 
-    def predict(self, brew_beer: str ) -> list:
+    def predict(self, brew_beer: str, n: int = 5) -> list:
         """Given a string representing a beer, returns a list of suggested
         beers.
 
@@ -48,4 +49,9 @@ class CollaborativeRecommender:
         beers: list:
           A list of beers the user should try.
         """
-        pass
+        # Get the brew_beer's index
+        brew_idx = self.brew_beers.index(brew_beer)
+        # Gets the columns that have reviews for this beer
+        nearby_beers = self.similarity_mat[brew_idx].argsort()[:-6:-1]
+        # Predictions go in here
+        return [self.brew_beers[idx] for idx in nearby_beers]
