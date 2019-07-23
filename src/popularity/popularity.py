@@ -110,8 +110,39 @@ class PopularityRecommender:
         """
         return list(self.style_groups.keys())
 
-    def predict_style(self, style: str):
-        pass
+    def predict_style(self, style: str, n=5) -> pd.DataFrame:
+        """Returns the top n beers of the given style by rating.
 
-    def predict_group(self, group: str):
-        pass
+        Parameters
+        ----------
+        style: str
+          The style to make predictions on.
+        n: int (default = 5):
+          The number of beers to return.
+
+        Returns
+        -------
+        top_beers: pd.DataFrame
+          The highest rated beers in that style.
+        """
+        return self.beer_data[self.beer_data['style'] == style]. \
+                sort_values('rating', ascending=False).head(n)
+
+    def predict_group(self, group: str, n=5):
+        """Returns the top n beers of the given style group by rating.
+
+        Parameters
+        ----------
+        group: str
+          The group to make predictions on.
+        n: int (default = 5):
+          The number of beers to return.
+
+        Returns
+        -------
+        top_beers: pd.DataFrame
+          The highest rated beers in that group.
+        """
+        return self.beer_data[
+            self.beer_data['style'].isin(self.style_groups[group])
+            ].sort_values('rating', ascending=False).head(n)
