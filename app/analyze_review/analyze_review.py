@@ -1,5 +1,5 @@
 import sys
-# sys.path.append('/Users/brettcastellanos/galvanize/craft_beer_ratings/src')
+sys.path.append('/Users/brettcastellanos/galvanize/craft_beer_ratings/src')
 import re
 import pickle
 import pandas as pd
@@ -8,7 +8,8 @@ import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer
-from src.popularity.popularity import PopularityRecommender
+# import src.popularity
+# import src.collab
 
 
 def main():
@@ -20,33 +21,68 @@ class ReviewProcessor:
         self.stopwords = set(stopwords.words('english'))
         self.punctuation = '.!,;:\'"\(\)\[\]\n/'
         self.rgx = re.compile('[{}]'.format(self.punctuation))
-        self.reviews_df = pd.read_csv(
-            'data/1-clean/clean_reviews.csv'
-            )
-        with open(
-            'models/1-nmf/TF-IDF-Vectorizer.pkl',
-            'rb'
-        ) as p:
+        self.reviews_df = pd.read_csv('data/1-clean/clean_reviews.csv')
+
+        with open('models/1-nmf/TF-IDF-Vectorizer.pkl','rb') as p:
             self.tfidf_vectorizer = pickle.load(p)
+
         self.stemmer = LancasterStemmer()
-        with open(
-            'models/1-nmf/NMF.pkl',
-            'rb'
-        ) as p:
+
+        with open('models/1-nmf/NMF.pkl','rb') as p:
             self.NMF = pickle.load(p)
-        with open(
-            'models/1-nmf/W.pkl',
-            'rb'
-        ) as p:
+
+        with open('models/1-nmf/W.pkl','rb') as p:
             self.W = pickle.load(p)
 
-        self.pop_recommender = PopularityRecommender()
-        beer_data = pd.read_csv('data/raw/beers.csv')
-        self.pop_recommender.fit(beer_data)
+        with open('models/2-collab/collab_rec.pkl', 'rb') as p:
+            self.collab = pickle.load(p)
+
+        with open('models/3-popularity/pop_rec.pkl', 'rb') as p:
+            self.popularity = pickle.load(p)
 
         return None
 
-    def get_top_ten_reviews(self, topic_idx):
+    def predict(self, input_review: str = 'I like beer.'):
+        """Given text about beer, returns a set of recommendations.
+        """
+
+        clean_review = self.clean_review(input_review)
+        tf_idf_vec = self.get_tfidf_vector(clean_review)
+        topic_vec = self.get_topic_vector(tf_idf_vec)[0]
+        # print(topic_vec)
+        reviews_1 = self.get_topic_reviews(np.argmax(topic_vec))
+        reviews_2 = self.get_topic_reviews(np.argsort(topic_vec)[-2])
+        reviews_3 = self.get_topic_reviews(np.argsort(topic_vec)[-3])
+
+        assert type(reviews_1) == pd.DataFrame
+        assert type(reviews_2) == pd.DataFrame
+        assert type(reviews_3) == pd.DataFrame
+
+        top_10_reviews = pd.concat(
+            (reviews_1.iloc[:4, :], reviews_2.iloc[:3, :], reviews_3.iloc[:3, :]),
+            axis=0
+        )
+        # print(top_9_reviews)
+        brew_beers = []
+        for brew_beer in top_10_reviews['brew_beer']:
+            brew_beers.extend(self.collab.predict(brew_beer)[0:2])
+        brew_beers = set(brew_beers)
+        # You now have a list of beers close to the beers in the topic.
+        # You can recommend a subset of these beers.
+
+        return brew_beers
+
+
+
+
+
+
+
+
+    def get_topic_reviews(self, topic_idx):
+        """Given a topic idx, returns the top ten reviews associated with that
+        topic.
+        """
         top_reviews_idx = np.argsort(self.W[:, topic_idx])[-1:-11:-1]
         return self.reviews_df.iloc[top_reviews_idx]
 
