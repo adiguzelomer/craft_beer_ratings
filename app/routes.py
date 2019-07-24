@@ -27,9 +27,14 @@ def review():
     if form.validate_on_submit():
         global processor
         flash('You might enjoy these beers!')
-        beers = processor.predict(form.beer_review.data)
-        for beer in beers:
-            flash(beer)
+        beer_df = processor.predict(form.beer_review.data)
+        # Retuned DF with the beers to be recommended
+        for brew_beer in beer_df['brew_beer']:
+            row = beer_df[beer_df['brew_beer']==brew_beer]
+            flash('Brewery: {} Beer: {} Rating: {}'.format(
+                row['brewery'].iloc[0], row['beer'].iloc[0],
+                row['rating'].iloc[0]
+            ))
         # clean_review = processor.clean_review(form.beer_review.data)
         # tf_idf_vec = processor.get_tfidf_vector(clean_review)
         # topic_vec = processor.get_topic_vector(tf_idf_vec)

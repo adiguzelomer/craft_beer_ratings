@@ -78,7 +78,7 @@ class PopularityRecommender:
         -------
         None
         """
-        columns = ['beer', 'brewery', 'style', 'rating']
+        columns = ['beer', 'brewery', 'style', 'rating', 'brew_beer']
         self.beer_data = beer_data[columns]
         return None
 

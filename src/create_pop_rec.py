@@ -9,17 +9,17 @@ import logging
 def main():
     pop_rec = PopularityRecommender()
 
-    beer_data = pd.read_csv('data/raw/beers.csv')
+    beer_data = pd.read_csv('data/2-clean/beers_trunc.csv')
 
     print('Fitting the model')
     pop_rec.fit(beer_data)
 
     print('Pickling the model')
-    with open('models/3-popularity/pop_rec.pkl', 'wb') as f:
+    with open('models/3-popularity/pop_rec1.pkl', 'wb') as f:
         pickle.dump(pop_rec, f)
 
     print('Uploading to S3')
-    upload_file('models/3-popularity/pop_rec.pkl', 'brett-craft-beer')
+    upload_file('models/3-popularity/pop_rec1.pkl', 'brett-craft-beer')
 
     return 0
 

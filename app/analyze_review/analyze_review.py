@@ -37,7 +37,7 @@ class ReviewProcessor:
         with open('models/2-collab/collab_rec.pkl', 'rb') as p:
             self.collab = pickle.load(p)
 
-        with open('models/3-popularity/pop_rec.pkl', 'rb') as p:
+        with open('models/3-popularity/pop_rec1.pkl', 'rb') as p:
             self.popularity = pickle.load(p)
 
         return None
@@ -69,14 +69,7 @@ class ReviewProcessor:
         brew_beers = set(brew_beers)
         # You now have a list of beers close to the beers in the topic.
         # You can recommend a subset of these beers.
-
-        return brew_beers
-
-
-
-
-
-
+        return self.popularity.beer_data[self.popularity.beer_data['brew_beer'].isin(brew_beers)]
 
 
     def get_topic_reviews(self, topic_idx):
