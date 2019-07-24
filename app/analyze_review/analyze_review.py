@@ -42,12 +42,44 @@ class ReviewProcessor:
 
         return None
 
-    def get_popularity_predictions(self, brew_beer, n=5):
-        """Given a brew_beer string, returns n predictions based on group.
+    def predict(self, input_review: str = 'I like beer.'):
+        """Given text about beer, returns a set of recommendations.
         """
-        return 0
 
-    def get_top_ten_reviews(self, topic_idx):
+        clean_review = self.clean_review(input_review)
+        tf_idf_vec = self.get_tfidf_vector(clean_review)
+        topic_vec = self.get_topic_vector(tf_idf_vec)[0]
+        # print(topic_vec)
+        reviews_1 = self.get_topic_reviews(np.argmax(topic_vec))
+        reviews_2 = self.get_topic_reviews(np.argsort(topic_vec)[-2])
+        reviews_3 = self.get_topic_reviews(np.argsort(topic_vec)[-3])
+
+        assert type(reviews_1) == pd.DataFrame
+        assert type(reviews_2) == pd.DataFrame
+        assert type(reviews_3) == pd.DataFrame
+
+        top_10_reviews = pd.concat(
+            (reviews_1.iloc[:4, :], reviews_2.iloc[:3, :], reviews_3.iloc[:3, :]),
+            axis=0
+        )
+        # print(top_9_reviews)
+        brew_beers = []
+        for brew_beer in top_10_reviews['brew_beer']:
+            brew_beers.extend(self.collab.predict(brew_beer)[0:2])
+        brew_beers = set(brew_beers)
+        # You now have a list of beers close to the beers in the topic.
+        # You can recommend a subset of these beers.
+
+        return brew_beers
+
+
+
+
+
+
+
+
+    def get_topic_reviews(self, topic_idx):
         """Given a topic idx, returns the top ten reviews associated with that
         topic.
         """
