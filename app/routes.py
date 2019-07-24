@@ -30,8 +30,10 @@ def review():
         clean_review = processor.clean_review(form.beer_review.data)
         tf_idf_vec = processor.get_tfidf_vector(clean_review)
         topic_vec = processor.get_topic_vector(tf_idf_vec)
-        for beer in processor.get_top_ten_reviews(argmax(topic_vec))['beer']:
-                flash(beer)
+        reviews = processor.get_top_ten_reviews(argmax(topic_vec))
+        for beer, overall in zip(reviews['beer'], reviews['overall']):
+                flash(beer + ' ' + str(overall))
+        # print(processor.get_top_ten_reviews(argmax(topic_vec)).columns)
         return redirect(url_for('review'))
     return render_template(url_for('review'), title='Check a Review', form=form)
 
